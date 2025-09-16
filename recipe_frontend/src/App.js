@@ -18,11 +18,31 @@ import { RecipeProvider } from './context/RecipeContext';
  *  - default redirect to /recipes
  */
 function App() {
+  // Theme management with persistence
+  const [theme, setTheme] = React.useState(() => {
+    // Prefer saved theme, else user OS preference, else light
+    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('theme') : null;
+    if (saved === 'light' || saved === 'dark') return saved;
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  });
+
+  React.useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+    try {
+      window.localStorage.setItem('theme', theme);
+    } catch {}
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
+
   return (
     <RecipeProvider>
       <Router>
         <div className="app-shell">
-          <Header />
+          <Header theme={theme} onToggleTheme={toggleTheme} />
           <div className="content-area">
             <Sidebar />
             <main className="main-content" role="main" aria-live="polite">

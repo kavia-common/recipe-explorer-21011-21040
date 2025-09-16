@@ -3,8 +3,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useRecipes } from '../context/RecipeContext';
 
 // PUBLIC_INTERFACE
-export default function Header() {
-  /** Top navigation header with brand and quick actions */
+export default function Header({ theme = 'light', onToggleTheme = () => {} }) {
+  /**
+   * Top navigation header with brand and quick actions
+   * Props:
+   * - theme: 'light' | 'dark' current theme label
+   * - onToggleTheme: function to switch theme
+   */
   const { setSearch } = useRecipes();
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,6 +20,8 @@ export default function Header() {
     const el = document.getElementById('recipe-search-input');
     if (el) el.focus();
   };
+
+  const isDark = theme === 'dark';
 
   return (
     <header className="header">
@@ -28,6 +35,16 @@ export default function Header() {
           <button className="btn" onClick={onNewSearch} aria-label="Start a new search">New Search</button>
         </nav>
         <div className="header-actions">
+          <button
+            className="toggle"
+            onClick={onToggleTheme}
+            aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
+            title={`Theme: ${isDark ? 'Dark' : 'Light'}`}
+          >
+            <span className="dot" aria-hidden="true" />
+            <span className="label">{isDark ? 'Dark' : 'Light'}</span>
+            <span aria-hidden="true">{isDark ? '🌙' : '🌤️'}</span>
+          </button>
           <a
             className="btn btn-accent"
             href="https://react.dev"
